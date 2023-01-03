@@ -23,7 +23,7 @@ export interface PokemonData {
   }[];
 }
 
-export enum FETCH_STATE {
+export enum FetchState {
   Idle = "Idle",
   Pending = "Pending",
   Success = "Success",

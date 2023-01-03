@@ -5,6 +5,8 @@ import { PokemonEvolutions } from "./PokemonEvolutions";
 import { PokemonImage } from "./PokemonImage";
 import { BackButton } from "./BackButton";
 import { PokemonData } from "./types";
+import { useParams } from "react-router";
+import { Link } from "react-router-dom";
 
 export const getPokemonChain = (acc: any, data: any) => {
   acc.push({
@@ -21,20 +23,15 @@ interface PokemonChain {
   chain: { evolves_to: { species: { name: string } }[] };
 }
 
-export function PokemonPage({
-  selectedPokemon,
-  setSelectedPokemon,
-}: {
-  selectedPokemon: number;
-  setSelectedPokemon: Dispatch<SetStateAction<number | null>>;
-}) {
+export function PokemonPage() {
   const [pokemonChainData, setPokemonChain] = useState<PokemonChain | null>(
     null
   );
   const [pokemonData, setPokemonData] = useState<PokemonData | null>(null);
+  const { id } = useParams<{ id: string }>();
 
   useEffect(() => {
-    fetch(`https://pokeapi.co/api/v2/pokemon/${selectedPokemon}`)
+    fetch(`https://pokeapi.co/api/v2/pokemon/${id}`)
       .then((response) => response.json())
       .then((data: PokemonData) => {
         setPokemonData(data);
@@ -48,7 +45,7 @@ export function PokemonPage({
               });
           });
       });
-  }, [selectedPokemon]);
+  }, [id]);
 
   const pokemonChain = useMemo(() => {
     if (pokemonChainData?.chain) {
@@ -58,7 +55,9 @@ export function PokemonPage({
 
   return (
     <div className="pokemon-page">
-      <BackButton setSelectedPokemon={setSelectedPokemon} />
+      <Link to="/">
+        <BackButton />
+      </Link>
       {pokemonData ? (
         <>
           <PokemonImage pokemonData={pokemonData} />

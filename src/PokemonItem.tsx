@@ -1,13 +1,8 @@
 import { useState, useEffect, Dispatch, SetStateAction } from "react";
+import { Link } from "react-router-dom";
 import { PokemonData } from "./types";
 
-export function PokemonItem({
-  name,
-  setSelectedPokemon,
-}: {
-  name: string;
-  setSelectedPokemon: Dispatch<SetStateAction<number | null>>;
-}) {
+export function PokemonItem({ name }: { name: string }) {
   const [pokemonData, setPokemonData] = useState<PokemonData | null>(null);
 
   useEffect(() => {
@@ -23,14 +18,13 @@ export function PokemonItem({
   }
 
   return (
-    <div
-      className="pokemon-wrapper"
-      onClick={() => setSelectedPokemon(pokemonData.id)}
-    >
-      {pokemonData.sprites && (
-        <img src={pokemonData.sprites.front_default} alt="" />
-      )}
-      <div className="name">{name}</div>
-    </div>
+    <Link to={`/pokemon/${pokemonData.id}`}>
+      <div className="pokemon-wrapper">
+        {pokemonData.sprites && (
+          <img src={pokemonData.sprites.front_default} alt="" />
+        )}
+        <div className="name">{name}</div>
+      </div>
+    </Link>
   );
 }

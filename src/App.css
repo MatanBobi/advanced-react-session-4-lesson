@@ -2,6 +2,10 @@ html body {
   background: #263238;
 }
 
+#root {
+  width: 100%;
+}
+
 .App {
   text-align: center;
   max-width: 1200px;
@@ -149,6 +153,7 @@ h1 {
 .pokemons-list {
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
+  row-gap: 15px;
 }
 
 .pokemons-list a {

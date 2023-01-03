@@ -4,9 +4,10 @@ import { PokemonColor } from "./PokemonColor";
 import { PokemonEvolutions } from "./PokemonEvolutions";
 import { PokemonImage } from "./PokemonImage";
 import { BackButton } from "./BackButton";
-import { PokemonData } from "./types";
+import { FetchState, PokemonData } from "./types";
 import { useParams } from "react-router";
 import { Link } from "react-router-dom";
+import Spinner from "./Spinner/Spinner";
 
 export const getPokemonChain = (acc: any, data: any) => {
   acc.push({
@@ -28,13 +29,22 @@ export function PokemonPage() {
     null
   );
   const [pokemonData, setPokemonData] = useState<PokemonData | null>(null);
+  const [pokemonDataFetchState, setPokemonDataFetchState] = useState(
+    FetchState.Idle
+  );
+  const [pokemonEvoluationsFetchState, setPokemonEvoluationsFetchState] =
+    useState(FetchState.Idle);
+
   const { id } = useParams<{ id: string }>();
 
   useEffect(() => {
+    setPokemonDataFetchState(FetchState.Pending);
     fetch(`https://pokeapi.co/api/v2/pokemon/${id}`)
       .then((response) => response.json())
       .then((data: PokemonData) => {
         setPokemonData(data);
+        setPokemonDataFetchState(FetchState.Success);
+        setPokemonEvoluationsFetchState(FetchState.Pending);
         fetch(data.species.url)
           .then((response) => response.json())
           .then((data: { evolution_chain: { url: string } }) => {
@@ -42,6 +52,7 @@ export function PokemonPage() {
               .then((response) => response.json())
               .then((data: PokemonChain) => {
                 setPokemonChain(data);
+                setPokemonEvoluationsFetchState(FetchState.Success);
               });
           });
       });
@@ -58,14 +69,20 @@ export function PokemonPage() {
       <Link to="/">
         <BackButton />
       </Link>
-      {pokemonData ? (
+      {pokemonDataFetchState === FetchState.Pending || !pokemonData ? (
+        <Spinner />
+      ) : (
         <>
           <PokemonImage pokemonData={pokemonData} />
           <PokemonDetails pokemonData={pokemonData} />
           <PokemonColor types={pokemonData.types} />
         </>
-      ) : null}
-      <PokemonEvolutions pokemonChain={pokemonChain} />
+      )}
+      {pokemonEvoluationsFetchState === FetchState.Pending || !pokemonChain ? (
+        <Spinner />
+      ) : (
+        <PokemonEvolutions pokemonChain={pokemonChain} />
+      )}
     </div>
   );
 }

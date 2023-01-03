@@ -1,20 +1,25 @@
-import { useState, useEffect, Dispatch, SetStateAction } from "react";
+import { useState, useEffect } from "react";
+import Spinner from "./Spinner/Spinner";
 import { Link } from "react-router-dom";
-import { PokemonData } from "./types";
+import { FetchState, PokemonData } from "./types";
 
 export function PokemonItem({ name }: { name: string }) {
   const [pokemonData, setPokemonData] = useState<PokemonData | null>(null);
+  const [fetchState, setFetchState] = useState(FetchState.Idle);
 
   useEffect(() => {
-    fetch(`https://pokeapi.co/api/v2/pokemon/${name}`)
-      .then((response) => response.json())
-      .then((data) => {
-        setPokemonData(data);
-      });
+    const fetchData = async () => {
+      const response = await fetch(`https://pokeapi.co/api/v2/pokemon/${name}`);
+      const data = await response.json();
+      setPokemonData(data);
+      setFetchState(FetchState.Success);
+    };
+
+    fetchData();
   }, [name]);
 
-  if (!pokemonData) {
-    return null;
+  if (fetchState === FetchState.Pending || !pokemonData) {
+    return <Spinner />;
   }
 
   return (

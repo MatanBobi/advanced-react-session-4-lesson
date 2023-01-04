@@ -9,6 +9,7 @@ export function PokemonItem({ name }: { name: string }) {
 
   useEffect(() => {
     const fetchData = async () => {
+      setFetchState(FetchState.Pending);
       const response = await fetch(`https://pokeapi.co/api/v2/pokemon/${name}`);
       const data = await response.json();
       setPokemonData(data);

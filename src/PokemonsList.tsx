@@ -28,6 +28,10 @@ export const PokemonsList = memo(() => {
     getPokemons();
   }, []);
 
+  if (fetchState === FetchState.Pending) {
+    return <Spinner />;
+  }
+
   return (
     <div className="pokemons-list">
       {pokemons.map((pokemon) => (

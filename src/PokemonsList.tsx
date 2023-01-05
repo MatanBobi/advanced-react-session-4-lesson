@@ -2,6 +2,7 @@ import {
   Dispatch,
   memo,
   SetStateAction,
+  Suspense,
   useCallback,
   useEffect,
   useState,
@@ -9,34 +10,22 @@ import {
 import { FetchState, Pokemon } from "./types";
 import { PokemonItem } from "./PokemonItem";
 import Spinner from "./Spinner/Spinner";
+import { use } from "./hooks/use";
+import { fetchData } from "./helpers/data";
 
 export const PokemonsList = memo(() => {
-  const [pokemons, setPokemons] = useState<Pokemon[]>([]);
-  const [fetchState, setFetchState] = useState<FetchState>(FetchState.Idle);
-
-  useEffect(() => {
-    const getPokemons = () => {
-      setFetchState(FetchState.Pending);
-      fetch("https://pokeapi.co/api/v2/pokemon?limit=50")
-        .then((response) => response.json())
-        .then((data) => {
-          setPokemons(data.results);
-          setFetchState(FetchState.Success);
-        });
-    };
-
-    getPokemons();
-  }, []);
-
-  if (fetchState === FetchState.Pending) {
-    return <Spinner />;
-  }
+  const data = use(fetchData("https://pokeapi.co/api/v2/pokemon?limit=50"));
+  const pokemons: Pokemon[] = data.results;
 
   return (
     <div className="pokemons-list">
+      {/* <Suspense fallback={<Spinner />}> */}
       {pokemons.map((pokemon) => (
-        <PokemonItem name={pokemon.name} key={pokemon.name} />
+        <Suspense fallback={<Spinner />} key={pokemon.name}>
+          <PokemonItem name={pokemon.name} />
+        </Suspense>
       ))}
+      {/* </Suspense> */}
     </div>
   );
 });

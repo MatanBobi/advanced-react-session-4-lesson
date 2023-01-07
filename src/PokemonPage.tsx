@@ -8,6 +8,8 @@ import { FetchState, PokemonData } from "./types";
 import { useParams } from "react-router";
 import { Link } from "react-router-dom";
 import Spinner from "./Spinner/Spinner";
+import { use } from "./hooks/use";
+import { fetchData } from "./helpers/data";
 
 export const getPokemonChain = (acc: any, data: any) => {
   acc.push({
@@ -25,38 +27,10 @@ interface PokemonChain {
 }
 
 export function PokemonPage() {
-  const [pokemonChainData, setPokemonChain] = useState<PokemonChain | null>(
-    null
-  );
-  const [pokemonData, setPokemonData] = useState<PokemonData | null>(null);
-  const [pokemonDataFetchState, setPokemonDataFetchState] = useState(
-    FetchState.Idle
-  );
-  const [pokemonEvoluationsFetchState, setPokemonEvoluationsFetchState] =
-    useState(FetchState.Idle);
-
   const { id } = useParams<{ id: string }>();
-
-  useEffect(() => {
-    setPokemonDataFetchState(FetchState.Pending);
-    fetch(`https://pokeapi.co/api/v2/pokemon/${id}`)
-      .then((response) => response.json())
-      .then((data: PokemonData) => {
-        setPokemonData(data);
-        setPokemonDataFetchState(FetchState.Success);
-        setPokemonEvoluationsFetchState(FetchState.Pending);
-        fetch(data.species.url)
-          .then((response) => response.json())
-          .then((data: { evolution_chain: { url: string } }) => {
-            fetch(data.evolution_chain.url)
-              .then((response) => response.json())
-              .then((data: PokemonChain) => {
-                setPokemonChain(data);
-                setPokemonEvoluationsFetchState(FetchState.Success);
-              });
-          });
-      });
-  }, [id]);
+  const pokemonData = use(fetchData(`https://pokeapi.co/api/v2/pokemon/${id}`));
+  const pokemonSpecies = use(fetchData(pokemonData.species.url));
+  const pokemonChainData = use(fetchData(pokemonSpecies.evolution_chain.url));
 
   const pokemonChain = useMemo(() => {
     if (pokemonChainData?.chain) {
@@ -69,20 +43,12 @@ export function PokemonPage() {
       <Link to="/">
         <BackButton />
       </Link>
-      {pokemonDataFetchState === FetchState.Pending || !pokemonData ? (
-        <Spinner />
-      ) : (
-        <>
-          <PokemonImage pokemonData={pokemonData} />
-          <PokemonDetails pokemonData={pokemonData} />
-          <PokemonColor types={pokemonData.types} />
-        </>
-      )}
-      {pokemonEvoluationsFetchState === FetchState.Pending || !pokemonChain ? (
-        <Spinner />
-      ) : (
-        <PokemonEvolutions pokemonChain={pokemonChain} />
-      )}
+      <>
+        <PokemonImage pokemonData={pokemonData} />
+        <PokemonDetails pokemonData={pokemonData} />
+        <PokemonColor types={pokemonData.types} />
+      </>
+      <PokemonEvolutions pokemonChain={pokemonChain} />
     </div>
   );
 }

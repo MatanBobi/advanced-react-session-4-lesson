@@ -1,5 +1,7 @@
-import { Dispatch, SetStateAction } from "react";
-
-export function BackButton() {
-  return <button className="back-button">Back</button>;
+export function BackButton(props: any) {
+  return (
+    <button className="back-button" {...props}>
+      Back
+    </button>
+  );
 }

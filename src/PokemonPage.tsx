@@ -5,9 +5,8 @@ import { PokemonEvolutions } from "./PokemonEvolutions";
 import { PokemonImage } from "./PokemonImage";
 import { BackButton } from "./BackButton";
 import { FetchState, PokemonData } from "./types";
-import { useParams } from "react-router";
-import { Link } from "react-router-dom";
 import Spinner from "./Spinner/Spinner";
+import { useActivePokemon } from "./hooks/useActivePokemon";
 
 export const getPokemonChain = (acc: any, data: any) => {
   acc.push({
@@ -35,11 +34,11 @@ export function PokemonPage() {
   const [pokemonEvoluationsFetchState, setPokemonEvoluationsFetchState] =
     useState(FetchState.Idle);
 
-  const { id } = useParams<{ id: string }>();
+  const { activePokemon, setActivePokemon } = useActivePokemon();
 
   useEffect(() => {
     setPokemonDataFetchState(FetchState.Pending);
-    fetch(`https://pokeapi.co/api/v2/pokemon/${id}`)
+    fetch(`https://pokeapi.co/api/v2/pokemon/${activePokemon}`)
       .then((response) => response.json())
       .then((data: PokemonData) => {
         setPokemonData(data);
@@ -56,7 +55,7 @@ export function PokemonPage() {
               });
           });
       });
-  }, [id]);
+  }, [activePokemon]);
 
   const pokemonChain = useMemo(() => {
     if (pokemonChainData?.chain) {
@@ -66,9 +65,11 @@ export function PokemonPage() {
 
   return (
     <div className="pokemon-page">
-      <Link to="/">
-        <BackButton />
-      </Link>
+      <BackButton
+        onClick={() => {
+          setActivePokemon("");
+        }}
+      />
       {pokemonDataFetchState === FetchState.Pending || !pokemonData ? (
         <Spinner />
       ) : (

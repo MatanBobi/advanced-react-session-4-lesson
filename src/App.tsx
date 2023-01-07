@@ -1,9 +1,10 @@
-import { Suspense } from "react";
+import { lazy, Suspense } from "react";
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 import "./App.css";
 import { Home } from "./Home";
-import { PokemonPage } from "./PokemonPage";
 import Spinner from "./Spinner/Spinner";
+
+const PokemonPage = lazy(() => import("./PokemonPage"));
 
 export function App() {
   return (

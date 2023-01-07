@@ -52,3 +52,5 @@ export function PokemonPage() {
     </div>
   );
 }
+
+export default PokemonPage;

@@ -11,8 +11,8 @@
   },
   "dependencies": {
     "match-sorter": "^6.3.1",
-    "react": "^18.3.0-next-de7d1c907-20221223",
-    "react-dom": "^18.3.0-next-de7d1c907-20221223",
+    "react": "^18.3.0-canary-670811593-20240322",
+    "react-dom": "^18.3.0-canary-670811593-20240322",
     "react-router-dom": "^5.3.4"
   },
   "devDependencies": {

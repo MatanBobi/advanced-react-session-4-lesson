@@ -1,4 +1,4 @@
-import { Link, useHistory } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { use } from "./hooks/use";
 import { fetchData } from "./helpers/data";
 import { useTransition } from "react";
@@ -8,14 +8,14 @@ export function PokemonItem({ name }: { name: string }) {
   const pokemonData = use(
     fetchData(`https://pokeapi.co/api/v2/pokemon/${name}`)
   );
-  const history = useHistory();
+  const navigate = useNavigate();
   const [isPending, startTransition] = useTransition();
 
   return (
     <div
       onClick={() => {
         startTransition(() => {
-          history.push(`/pokemon/${pokemonData.id}`);
+          navigate(`/pokemon/${pokemonData.id}`);
         });
       }}
     >

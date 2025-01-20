@@ -1,11 +1,11 @@
+import { use } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { use } from "./hooks/use";
 import { fetchData } from "./helpers/data";
 import { useTransition } from "react";
 import Spinner from "./Spinner/Spinner";
 
 export function PokemonItem({ name }: { name: string }) {
-  const pokemonData = use(
+  const pokemonData = use<{ id: string; sprites: { front_default: string } }>(
     fetchData(`https://pokeapi.co/api/v2/pokemon/${name}`)
   );
   const navigate = useNavigate();

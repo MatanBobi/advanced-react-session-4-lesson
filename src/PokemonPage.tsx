@@ -1,4 +1,11 @@
-import { useEffect, useState, useMemo, Dispatch, SetStateAction } from "react";
+import {
+  useEffect,
+  useState,
+  useMemo,
+  Dispatch,
+  SetStateAction,
+  use,
+} from "react";
 import { PokemonDetails } from "./PokemonDetails";
 import { PokemonColor } from "./PokemonColor";
 import { PokemonEvolutions } from "./PokemonEvolutions";
@@ -7,7 +14,6 @@ import { BackButton } from "./BackButton";
 import { FetchState, PokemonData } from "./types";
 import { Link, useParams } from "react-router-dom";
 import Spinner from "./Spinner/Spinner";
-import { use } from "./hooks/use";
 import { fetchData } from "./helpers/data";
 
 export const getPokemonChain = (acc: any, data: any) => {
@@ -27,9 +33,15 @@ interface PokemonChain {
 
 export function PokemonPage() {
   const { id } = useParams<{ id: string }>();
-  const pokemonData = use(fetchData(`https://pokeapi.co/api/v2/pokemon/${id}`));
-  const pokemonSpecies = use(fetchData(pokemonData.species.url));
-  const pokemonChainData = use(fetchData(pokemonSpecies.evolution_chain.url));
+  const pokemonData = use<PokemonData>(
+    fetchData(`https://pokeapi.co/api/v2/pokemon/${id}`)
+  );
+  const pokemonSpecies = use<{ evolution_chain: { url: string } }>(
+    fetchData(pokemonData.species.url)
+  );
+  const pokemonChainData = use<{ chain: { evolves_to: string[] } }>(
+    fetchData(pokemonSpecies.evolution_chain.url)
+  );
 
   const pokemonChain = useMemo(() => {
     if (pokemonChainData?.chain) {

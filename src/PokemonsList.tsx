@@ -6,15 +6,15 @@ import {
   useCallback,
   useEffect,
   useState,
+  use
 } from "react";
 import { FetchState, Pokemon } from "./types";
 import { PokemonItem } from "./PokemonItem";
 import Spinner from "./Spinner/Spinner";
-import { use } from "./hooks/use";
 import { fetchData } from "./helpers/data";
 
 export const PokemonsList = memo(() => {
-  const data = use(fetchData("https://pokeapi.co/api/v2/pokemon?limit=50"));
+  const data = use<{results: Pokemon[]}>(fetchData("https://pokeapi.co/api/v2/pokemon?limit=50"));
   const pokemons: Pokemon[] = data.results;
 
   return (
